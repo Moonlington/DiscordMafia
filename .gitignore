@@ -15,3 +15,7 @@
 
 # Config file
 *.toml
+
+# Databases
+*.db
+*.db-journal

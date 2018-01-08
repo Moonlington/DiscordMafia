@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"time"
 
 	"github.com/Moonlington/discordflo"
@@ -50,5 +51,39 @@ func loadCommands() {
 				})
 			}
 			ffs.ChannelMessageEditEmbed(msg.ChannelID, msg.ID, em)
+		}))
+
+	ffs.AddCommand("Owner", discordflo.NewCommand(
+		"gencities",
+		"",
+		"",
+		"",
+		func(ctx *discordflo.Context) {
+			if ctx.Mess.Author.ID == conf.Owner {
+				for i := 1; i <= 10; i++ {
+					addCity(cityName())
+				}
+			}
+		}))
+	ffs.AddCommand("Owner", discordflo.NewCommand(
+		"genlocations",
+		"",
+		"",
+		"",
+		func(ctx *discordflo.Context) {
+			if ctx.Mess.Author.ID == conf.Owner {
+				var amount int
+				err := db.QueryRow("SELECT COUNT(ID) FROM Cities").Scan(&amount)
+				if err != nil {
+					return
+				}
+				for i := 1; i <= amount; i++ {
+					for j := 1; j <= 25; j++ {
+						d := rand.Float64() * 10
+						w := 1575 * d
+						addCompany(companyName(), w, d, i)
+					}
+				}
+			}
 		}))
 }

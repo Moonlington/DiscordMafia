@@ -1,10 +1,13 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
+	"math/rand"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/BurntSushi/toml"
 	"github.com/Moonlington/discordflo"
@@ -13,6 +16,7 @@ import (
 
 var ffs *discordflo.FloFloSession
 var conf *Config
+var db *sql.DB
 
 func pauseTilDead() {
 	sc := make(chan os.Signal, 1)
@@ -29,8 +33,11 @@ func loadConfig() {
 }
 
 func main() {
+	rand.Seed(time.Now().UnixNano())
 	//Try to load the config
 	loadConfig()
+	//And the database
+	db = loadDB()
 
 	// Create a new Discord session using the provided bot token
 	bot, err := discordflo.New("Bot "+conf.Token, conf.Prefix, false)
