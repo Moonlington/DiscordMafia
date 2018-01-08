@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/Moonlington/discordflo"
+	"github.com/bwmarrin/discordgo"
 )
 
 func loadCommands() {
@@ -32,6 +33,22 @@ func loadCommands() {
 			}
 			then := time.Since(now)
 			em.Description = fmt.Sprintf("Ping! `%s`", then.String())
-			ctx.Sess.ChannelMessageEditEmbed(msg.ChannelID, msg.ID, em)
+			if ctx.Argstr == "ex" {
+				now2 := time.Now()
+				ffs.MessageReactionAdd(msg.ChannelID, msg.ID, "💥")
+				then2 := time.Since(now2)
+				em.Description += fmt.Sprintf(" | Reaction: `%s`", then2.String())
+				now3 := time.Now()
+				addReactionQueue(func(m *discordgo.MessageReactionAdd) bool {
+					if m.MessageID == msg.ID && m.Emoji.Name == "💥" && m.UserID != ffs.State.User.ID {
+						then3 := time.Since(now3)
+						em.Description += fmt.Sprintf(" | You: `%s`", then3.String())
+						ffs.ChannelMessageEditEmbed(msg.ChannelID, msg.ID, em)
+						return true
+					}
+					return false
+				})
+			}
+			ffs.ChannelMessageEditEmbed(msg.ChannelID, msg.ID, em)
 		}))
 }

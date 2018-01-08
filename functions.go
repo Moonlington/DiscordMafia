@@ -18,6 +18,8 @@ func createEmbed(ctx *discordflo.Context, s string) *discordgo.MessageEmbed {
 // ErrUserFinding is the error it gives when more than 1 or no users are found, used to return commands.
 var ErrUserFinding = errors.New("Found more than 1 or no users")
 
+// FINDING FUNCTIONS
+
 func removeDuplicateUsers(list *[]*discordgo.User) {
 	found := make(map[string]bool)
 	j := 0
@@ -241,4 +243,42 @@ func GetUser(ctx *discordflo.Context, args ...string) (user *discordgo.User, err
 		return
 	}
 	return
+}
+
+// REACTION FUNCTIONS
+
+func addMessageQueue(f func(m *discordgo.MessageCreate) bool) <-chan *discordgo.MessageCreate {
+	c := make(chan *discordgo.MessageCreate)
+	go func() {
+		var deletdis func()
+		x := make(chan *discordgo.MessageCreate)
+		deletdis = ffs.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
+			if f(m) {
+				x <- m
+			}
+		})
+		c <- <-x
+		close(x)
+		close(c)
+		deletdis()
+	}()
+	return c
+}
+
+func addReactionQueue(f func(m *discordgo.MessageReactionAdd) bool) <-chan *discordgo.MessageReactionAdd {
+	c := make(chan *discordgo.MessageReactionAdd)
+	go func() {
+		var deletdis func()
+		x := make(chan *discordgo.MessageReactionAdd)
+		deletdis = ffs.AddHandler(func(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
+			if f(m) {
+				x <- m
+			}
+		})
+		c <- <-x
+		close(x)
+		close(c)
+		deletdis()
+	}()
+	return c
 }
