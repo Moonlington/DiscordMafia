@@ -18,6 +18,7 @@ func loadDB() *sql.DB {
 func addCity(name string) (sql.Result, error) {
 	return db.Exec("INSERT INTO Cities(Name) VALUES (?)", name)
 }
+
 func addCompany(name string, wealth, diff float64, city int) (sql.Result, error) {
 	return db.Exec("INSERT INTO Companies(Name, Wealth, Difficulty, City) VALUES (?,?,?,?)", name, wealth, diff, city)
 }

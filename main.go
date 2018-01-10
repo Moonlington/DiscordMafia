@@ -61,6 +61,7 @@ func main() {
 
 	// Load all commands into discordflo
 	loadCommands()
+	loadOwnerCommands()
 
 	// Wait here until CTRL-C or other term signal is received
 	fmt.Println("Bot is now running.  Press CTRL-C to exit.")
